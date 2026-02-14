@@ -1,0 +1,21 @@
+# 基础镜像
+FROM python:3.12
+
+# 设置工作目录
+WORKDIR /ComfyUI
+
+# 声明挂载
+VOLUME ["./source_code"]
+
+# 升级 pip 到 25.2（确保有 --resume-retries）
+# RUN python -m pip install --upgrade "pip>=25.2"
+
+# 安装依赖
+# CMD cd /ComfyUI/source_code \
+# && python -m venv venv \
+# && ./venv/bin/python -m pip install --upgrade "pip>=25.2" \
+# && ./venv/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130 --resume-retries 999999 \
+# && ./venv/bin/pip install -r requirements.txt --resume-retries 999999 \
+# && /bin/bash
+
+CMD ["/bin/bash"]

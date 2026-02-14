@@ -1,0 +1,25 @@
+# 基础镜像
+FROM comfyui_image:0.0.2
+
+# 设置工作目录
+WORKDIR /ComfyUI
+
+# 声明挂载
+VOLUME ["./source_code","./base_directory","./input", "./output", "./temp", './extra_model_paths_config', './models', './user', './start']
+
+# 声明端口
+EXPOSE 8144
+
+# 添加用户组和用户
+RUN groupadd comfyuser_group && \
+    useradd -g comfyuser_group -m comfyuser_1
+
+# 创建挂载点目录，并授权给用户
+RUN mkdir -p ./base_directory ./input ./output ./temp ./extra_model_paths_config ./models ./user ./start && \
+    chown -R comfyuser_1:comfyuser_group ./source_code ./base_directory ./input ./output ./temp ./extra_model_paths_config ./models ./user ./start
+
+# 切换用户
+USER comfyuser_1
+
+# CMD ["/ComfyUI/source_code/venv/bin/python", "/ComfyUI/source_code/main.py", "--listen", "--port", "8144"]
+CMD ["/bin/bash"]
