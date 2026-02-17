@@ -15,12 +15,12 @@ start_comfyui() {
     --listen
     --port 8144
     --enable-cors-header '*'
-    --base-directory /ComfyUI/base_directory
-    --input-directory /ComfyUI/input
-    --output-directory /ComfyUI/output
-    --temp-directory /ComfyUI/temp
-    --extra-model-paths-config /ComfyUI/extra_model_paths_config/extra_model_paths.yaml
-    --user-directory /ComfyUI/user
+    --base-directory $HOME/ComfyUI/base-directory
+    --input-directory $HOME/ComfyUI/input
+    --output-directory $HOME/ComfyUI/output
+    --temp-directory $HOME/ComfyUI/temp
+    --extra-model-paths-config $HOME/ComfyUI/extra_model_paths_config/extra_model_paths.yaml
+    --user-directory $HOME/ComfyUI/user
     --disable-auto-launch
     --preview-method none
     --enable-manager
@@ -33,7 +33,7 @@ start_comfyui() {
     echo "" # 最后补个换行
 
     # 2. 真正执行命令
-    /ComfyUI/source_code/venv/bin/python /ComfyUI/source_code/main.py $COMMON_ARGS "$@"
+    $HOME/ComfyUI/source_code/venv/bin/python $HOME/ComfyUI/source_code/main.py $COMMON_ARGS "$@"
 }
 
 # 1. 定义提示信息

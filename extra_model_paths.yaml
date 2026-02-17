@@ -26,6 +26,7 @@
 
 comfyui:
   base_path: /ComfyUI/models
+  # base_path: /mnt/e/AI_Sources/models
   is_default: true
 
   # 模型路径

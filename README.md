@@ -35,14 +35,6 @@
 
 ## 部署ComfyUI
 
-### 克隆ComfyUI代码
-
-在宿主目录下，执行如下命令，克隆ComfyUI代码到`source_code`目录。
-
-```bash
-git clone https://github.com/Comfy-Org/ComfyUI.git source_code
-```
-
 ### 复制ComfyUI启动脚本到`start`目录
 
 在宿主目录下，把本项目的`run.sh`脚本复制到`start`目录。
@@ -51,56 +43,10 @@ git clone https://github.com/Comfy-Org/ComfyUI.git source_code
 
 在宿主目录下，把本项目的`extra_model_paths.yaml`脚本复制到`extra_model_paths_config`目录。
 
-### 以基础镜像构建一个镜像，挂载ComfyUI代码目录，安装ComfyUI依赖
+### 构建镜像
 
 ```bash
-docker buildx build -f Dockerfile_ComfyUI_Init -t comfyui_image:0.0.1 .
-```
-
-### 运行有自动安装依赖的容器
-
-在宿主目录下，执行如下命令，运行有自动安装依赖的容器。
-
-```bash
-docker run `
-    --name ComfyUI_Container `
-    -itd `
-    --mount type=bind,source=E:\ComfyUI_runtime\source_code,target=/ComfyUI/source_code `
-    comfyui_image:0.0.1
-```
-
-### 安装依赖
-
-#### 进入容器
-
-在宿主目录下，执行如下命令，进入容器。
-
-```bash
-docker exec -it ComfyUI_Container /bin/bash
-```
-
-#### 安装依赖
-
-在容器内，执行如下命令，安装ComfyUI依赖。
-
-```bash
-cd /ComfyUI/source_code
-python -m venv venv
-./venv/bin/python -m pip install --upgrade "pip>=25.2"
-./venv/bin/pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130 --resume-retries 999999
-./venv/bin/pip install -r requirements.txt --resume-retries 999999
-```
-
-### 提交镜像
-
-```bash
-docker commit ComfyUI_Container comfyui_image:0.0.2
-```
-
-### 生成最终镜像
-
-```bash
-docker buildx build -f Dockerfile_ComfyUI_FUll -t comfyui_image:1.0.0 .
+docker buildx build -f DockerFile_ComfyUI -t comfyui_image:3.0.2 .
 ```
 
 ### 运行ComfyUI容器
@@ -114,18 +60,17 @@ $container_comfyui_dir = "/ComfyUI"
 docker run `
     --name ComfyUI_Container `
     -itd `
+    --user comfyuser_1:comfyuser_group `
     --gpus all `
     -p 8144:8144 `
-    --mount type=bind,source=$host_comfyui_runtime_dir\source_code,target=$container_comfyui_dir/source_code `
-    --mount type=bind,source=$host_comfyui_runtime_dir\base_directory,target=$container_comfyui_dir/base_directory `
     --mount type=bind,source=$host_comfyui_runtime_dir\input,target=$container_comfyui_dir/input `
     --mount type=bind,source=$host_comfyui_runtime_dir\output,target=$container_comfyui_dir/output `
     --mount type=bind,source=$host_comfyui_runtime_dir\temp,target=$container_comfyui_dir/temp `
     --mount type=bind,readonly,source=$host_comfyui_runtime_dir\extra_model_paths_config,target=$container_comfyui_dir/extra_model_paths_config `
-    --mount type=bind,readonly,source=E:\AI_Sources\models,target=$container_comfyui_dir/models `
+    --mount type=bind,source=E:\AI_Sources\models,target=$container_comfyui_dir/models `
     --mount type=bind,source=$host_comfyui_runtime_dir\user,target=$container_comfyui_dir/user `
     --mount type=bind,source=$host_comfyui_runtime_dir\start,target=$container_comfyui_dir/start `
-    comfyui_image:1.0.0
+    comfyui_image:3.0.2
 ```
 
 ### 给普通用户授权便于安装依赖
@@ -171,3 +116,16 @@ docker commit ComfyUI_Container comfyui_image:X.Y.Z
 ```bash
 docker save -o comfyui_image_X.Y.Z.tar comfyui_image:X.Y.Z
 ```
+
+### 以root用户进入容器
+
+在宿主目录下，执行如下命令，以root用户进入容器。
+
+```bash
+docker exec -it --user root ComfyUI_Container /bin/bash
+```
+
+## 缺点
+
+Windows 的 bind mount 性能较差，特别是挂载大量小文件时。
+直接的影响在 ComfyUI 启动时，会导致较长的等待时间去加载自定义节点。

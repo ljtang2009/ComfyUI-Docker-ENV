@@ -1,0 +1,31 @@
+[wsl2]
+# 内存配置：ComfyUI 加载模型和运行时较吃内存。
+# 您有 40GB 物理内存，建议分配 30GB 给 WSL，留约 10GB 给 Windows 系统和显卡驱动开销，防止宿主机卡顿。
+memory=30GB
+
+# 处理器配置：i7-13650HX 拥有 14 核 20 线程。
+# 分配 16 个逻辑处理器给 WSL 足以应对 ComfyUI 的并行计算需求，同时保留部分资源给 Windows。
+processors=16
+
+# 交换空间：深度学习任务在内存不足时会用到 Swap。
+# 建议设置稍大的 Swap（如 16GB）以防止模型加载时崩溃，比默认的 25% 内存更稳定。
+swap=16GB
+
+# 网络：镜像模式。这是 WSL 2.0+ 的新特性，对您使用 v2rayN 代理至关重要。
+# 开启后，WSL 将共享 Windows 的 IP，可直接使用 127.0.0.1:10808 进行科学上网，无需额外配置。
+networkingMode=mirrored
+
+# 自动代理：开启后 WSL 会自动读取 Windows 系统的代理设置（即 v2rayN 的系统代理设置）。
+# 搭配 networkingMode=mirrored，可以让 git、pip 等工具无缝走代理下载模型和依赖。
+autoProxy=true
+
+# GPU：默认已开启，无需手动配置。WSL 会自动将 RTX 4060 透传给 Linux。
+# gpu=true
+
+# 嵌套虚拟化：如果您计划在 WSL 2 中使用 Docker 来运行 ComfyUI，必须开启此选项。
+nestedVirtualization=true
+
+[experimental]
+# 自动回收内存：Python 程序运行可能会产生内存碎片。
+# 开启 gradual 模式，系统会自动释放未使用的内存回 Windows，保持系统流畅。
+autoMemoryReclaim=gradual

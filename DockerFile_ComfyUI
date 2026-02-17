@@ -1,0 +1,56 @@
+# 基础镜像
+FROM pytorch/pytorch:2.10.0-cuda13.0-cudnn9-runtime
+
+# 安装基础环境
+RUN apt-get update \
+ && apt-get install -y git python3-venv \
+ && rm -rf /var/lib/apt/lists/*
+
+# 生成 pip 配置目录和文件
+RUN mkdir -p ~/.pip && \
+    cat > ~/.pip/pip.conf <<EOF
+[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple/
+trusted-host = pypi.tuna.tsinghua.edu.cn
+EOF
+
+# 设置工作目录
+WORKDIR /ComfyUI
+
+RUN git clone https://github.com/Comfy-Org/ComfyUI.git /ComfyUI/source_code \
+&& python -m venv /ComfyUI/source_code/venv \
+&& /ComfyUI/source_code/venv/bin/python -m pip install --upgrade "pip>=25.2" \
+&& /ComfyUI/source_code/venv/bin/pip install -r /ComfyUI/source_code/requirements.txt --resume-retries 999999 \
+&& /ComfyUI/source_code/venv/bin/pip install -r /ComfyUI/source_code/manager_requirements.txt --resume-retries 999999
+
+# 声明挂载
+# VOLUME "/ComfyUI/input" "/ComfyUI/output" "/ComfyUI/temp" "/ComfyUI/extra_model_paths_config" "/ComfyUI/models" "/ComfyUI/user" "/ComfyUI/start"
+
+# 声明端口
+EXPOSE 8144
+
+# 添加用户组和用户
+RUN groupadd comfyuser_group && \
+    useradd -g comfyuser_group -m comfyuser_1
+
+RUN chown -R comfyuser_1:comfyuser_group /ComfyUI
+
+# 切换用户
+USER comfyuser_1
+
+# 创建挂载点目录，~Q并授权给用户
+# RUN mkdir -p ./base_directory ./base_directory/custom_nodes ./input ./output ./temp ./extra_model_paths_config ./models ./user ./start && \
+#     chown -R comfyuser_1:comfyuser_group ./base_directory ./base_directory/custom_nodes ./input ./output ./temp ./extra_model_paths_config ./models ./user ./start
+# RUN mkdir -p ./base_directory ./base_directory/custom_nodes ./input ./output ./temp ./extra_model_paths_config ./models ./user ./start && \
+#     chown -R comfyuser_1:comfyuser_group ./base_directory ./base_directory/custom_nodes ./input ./output ./temp ./extra_model_paths_config ./models ./user ./start
+RUN mkdir -p /ComfyUI/base_directory \
+    /ComfyUI/base_directory/custom_nodes \
+    /ComfyUI/input \
+    /ComfyUI/output \
+    /ComfyUI/temp \
+    /ComfyUI/extra_model_paths_config \
+    /ComfyUI/models \
+    /ComfyUI/user \
+    /ComfyUI/start
+
+CMD ["/bin/bash"]
