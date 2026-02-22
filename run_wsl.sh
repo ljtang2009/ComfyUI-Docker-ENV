@@ -36,42 +36,64 @@ start_comfyui() {
     $HOME/ComfyUI/source_code/venv/bin/python $HOME/ComfyUI/source_code/main.py $COMMON_ARGS "$@"
 }
 
-# 1. 定义提示信息
-echo "============================"
-echo "    ComfyUI 启动助手"
-echo "============================"
-echo "1. 普通模式"
-echo "2. 低资源模式"
-echo "3. 极限兜底模式"
-echo "4. 退出"
-echo "============================"
+while true; do
+    echo "============================"
+    echo "    ComfyUI 启动助手"
+    echo "============================"
+    echo "1. 普通模式"
+    echo "2. 低资源模式"
+    echo "3. 极限兜底模式"
+    echo "4. 退出"
+    echo "============================"
 
-# 2. 获取用户输入
-# -p 表示提示信息，choice 是变量名
-read -p "请输入您的选择 [1-4]: " choice
+    read -p "请输入您的选择 [1-4]: " choice
 
-# 3. 根据输入执行命令 (case 语句)
+    case $choice in
+        1|2|3)
+            break
+            ;;
+        4)
+            echo "退出成功！"
+            exit 0
+            ;;
+        *)
+            echo "错误：无效的输入，请输入 1-4 之间的数字。"
+            echo ""
+            ;;
+    esac
+done
+
+VERBOSE_ARG=""
+while true; do
+    read -p "是否启用 Verbose? [y/N]: " verbose_choice
+    case $verbose_choice in
+        [Yy]*)
+            VERBOSE_ARG="--verbose"
+            break
+            ;;
+        [Nn]*|"")
+            break
+            ;;
+        *)
+            echo "错误：无效的输入，请输入 y 或 n。"
+            echo ""
+            ;;
+    esac
+done
+
 case $choice in
     1)
         print_title "普通模式"
-        start_comfyui
+        start_comfyui $VERBOSE_ARG
         ;;
     2)
         print_title "低资源模式"
         # TODO 未测试参数，只是做示例
-        start_comfyui --bf16-unet --bf16-vae
+        start_comfyui --bf16-unet --bf16-vae $VERBOSE_ARG
         ;;
     3)
         print_title "极限兜底模式"
         # TODO 未测试参数，只是做示例
-        start_comfyui --fp16-unet --fp16-vae
-        ;;
-    4)
-        echo "退出成功！"
-        exit 0
-        ;;
-    *)
-        echo "错误：无效的输入，请输入 1-4 之间的数字。"
-        exit 1
+        start_comfyui --fp16-unet --fp16-vae $VERBOSE_ARG
         ;;
 esac
