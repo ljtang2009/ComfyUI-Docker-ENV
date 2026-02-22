@@ -25,8 +25,9 @@
 #     model_patches: models/model_patches/
 
 comfyui:
-  base_path: /ComfyUI/models
+  # base_path: /ComfyUI/models
   # base_path: /mnt/e/AI_Sources/models
+  base_path: ~/ComfyUI/models
   is_default: true
 
   # 模型路径
@@ -59,6 +60,9 @@ comfyui:
   vae_approx: vae_approx
   aura-sr: Aura-SR
   llm: LLM
+  sams: sams
+  ultralytics_bbox : ultralytics/bbox,
+  pulid: pulid
 
 
 #config for a1111 ui

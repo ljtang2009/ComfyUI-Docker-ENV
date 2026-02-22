@@ -94,6 +94,7 @@ sudo apt install -y python3-pip python3-venv
 mkdir -p ~/ComfyUI
 mkdir -p ~/ComfyUI/base-directory
 mkdir -p ~/ComfyUI/base-directory/custom_nodes
+mkdir -p ~/ComfyUI/models
 ```
 
 ### 符号链接宿主目录
@@ -106,7 +107,6 @@ ln -s /mnt/e/ComfyUI_runtime/input ~/ComfyUI/input
 ln -s /mnt/e/ComfyUI_runtime/output ~/ComfyUI/output
 ln -s /mnt/e/ComfyUI_runtime/temp ~/ComfyUI/temp
 ln -s /mnt/e/ComfyUI_runtime/extra_model_paths_config ~/ComfyUI/extra_model_paths_config
-ln -s /mnt/e/AI_Sources/models ~/ComfyUI/models
 ln -s /mnt/e/ComfyUI_runtime/user ~/ComfyUI/user
 ln -s /mnt/e/ComfyUI_runtime/start ~/ComfyUI/start
 ```
